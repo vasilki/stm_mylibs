@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="testmylibs" />
+		<Option pch_mode="2" />
+		<Option compiler="gnu_gcc_compiler_for_arm_for_stm32f401re" />
+		<Build>
+			<Target title="default">
+				<Option output="default/testmylibs.elf" prefix_auto="0" extension_auto="0" />
+				<Option object_output="default" />
+				<Option type="1" />
+				<Option compiler="gnu_gcc_compiler_for_arm_for_stm32f401re" />
+				<Compiler>
+					<Add option="-g" />
+				</Compiler>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-mthumb" />
+			<Add option="-O2" />
+			<Add option="-Wall" />
+			<Add option="-g" />
+			<Add option="-mcpu=cortex-m4" />
+			<Add option="-mfpu=fpv4-sp-d16" />
+			<Add option="-mfloat-abi=hard" />
+			<Add option="-Og" />
+			<Add option="-fdata-sections" />
+			<Add option="-ffunction-sections" />
+			<Add option="-gdwarf-2" />
+			<Add option="-DUSE_HAL_DRIVER" />
+			<Add option="-DSTM32F401xE" />
+			<Add directory="Lib/Drivers/CMSIS/Device/ST/STM32F4xx/Include" />
+			<Add directory="Lib/Drivers/CMSIS/Include" />
+			<Add directory="Lib/Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates" />
+			<Add directory="Lib/Drivers/STM32F4xx_HAL_Driver/Inc" />
+			<Add directory="Lib/Drivers/STM32F4xx_HAL_Driver/Inc/Legacy" />
+			<Add directory="Lib/Drivers" />
+			<Add directory="Inc" />
+			<Add directory="../adc" />
+			<Add directory="../button" />
+			<Add directory="../dwt_stm32_delay" />
+			<Add directory="../timers" />
+			<Add directory="../led" />
+			<Add directory="../uart" />
+		</Compiler>
+		<Linker>
+			<Add option="-s" />
+			<Add option="-mcpu=cortex-m4" />
+			<Add option="-mthumb" />
+			<Add option="-mfpu=fpv4-sp-d16" />
+			<Add option="-mfloat-abi=hard" />
+			<Add option="-specs=nano.specs" />
+			<Add option="-lc" />
+			<Add option="-lm" />
+			<Add option="-lnosys" />
+			<Add option="-Wl,-Map=mapfile.txt,--cref -Wl,--gc-sections" />
+			<Add option="-T ld/STM32F401RETx_FLASH.ld" />
+		</Linker>
+		<Unit filename="../adc/adc.h" />
+		<Unit filename="../adc/adc_handle.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../button/button_handle.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../button/button_handle.h" />
+		<Unit filename="../dwt_stm32_delay/dwt_stm32_delay.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../dwt_stm32_delay/dwt_stm32_delay.h" />
+		<Unit filename="../led/LED.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../led/LED.h" />
+		<Unit filename="../timers/timers.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../timers/timers.h" />
+		<Unit filename="../uart/uart.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../uart/uart.h" />
+		<Unit filename="Inc/main.h" />
+		<Unit filename="Lib/Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f401xe.h" />
+		<Unit filename="Lib/Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h" />
+		<Unit filename="Lib/Drivers/CMSIS/Device/ST/STM32F4xx/Include/system_stm32f4xx.h" />
+		<Unit filename="Lib/Drivers/CMSIS/Include/arm_common_tables.h" />
+		<Unit filename="Lib/Drivers/CMSIS/Include/arm_const_structs.h" />
+		<Unit filename="Lib/Drivers/CMSIS/Include/arm_math.h" />
+		<Unit filename="Lib/Drivers/CMSIS/Include/cmsis_armcc.h" />
+		<Unit filename="Lib/Drivers/CMSIS/Include/cmsis_armcc_V6.h" />
+		<Unit filename="Lib/Drivers/CMSIS/Include/cmsis_gcc.h" />
+		<Unit filename="Lib/Drivers/CMSIS/Include/core_cm0.h" />
+		<Unit filename="Lib/Drivers/CMSIS/Include/core_cm0plus.h" />
+		<Unit filename="Lib/Drivers/CMSIS/Include/core_cm3.h" />
+		<Unit filename="Lib/Drivers/CMSIS/Include/core_cm4.h" />
+		<Unit filename="Lib/Drivers/CMSIS/Include/core_cm7.h" />
+		<Unit filename="Lib/Drivers/CMSIS/Include/core_cmFunc.h" />
+		<Unit filename="Lib/Drivers/CMSIS/Include/core_cmInstr.h" />
+		<Unit filename="Lib/Drivers/CMSIS/Include/core_cmSimd.h" />
+		<Unit filename="Lib/Drivers/CMSIS/Include/core_sc000.h" />
+		<Unit filename="Lib/Drivers/CMSIS/Include/core_sc300.h" />
+		<Unit filename="Lib/Drivers/STM32F4xx_HAL_Driver/Inc/Legacy/stm32_hal_legacy.h" />
+		<Unit filename="Lib/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h" />
+		<Unit filename="Lib/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_adc.h" />
+		<Unit filename="Lib/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_adc_ex.h" />
+		<Unit filename="Lib/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_cortex.h" />
+		<Unit filename="Lib/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h" />
+		<Unit filename="Lib/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_dma.h" />
+		<Unit filename="Lib/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_dma_ex.h" />
+		<Unit filename="Lib/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash.h" />
+		<Unit filename="Lib/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash_ex.h" />
+		<Unit filename="Lib/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash_ramfunc.h" />
+		<Unit filename="Lib/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_gpio.h" />
+		<Unit filename="Lib/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_gpio_ex.h" />
+		<Unit filename="Lib/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr.h" />
+		<Unit filename="Lib/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.h" />
+		<Unit filename="Lib/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h" />
+		<Unit filename="Lib/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc_ex.h" />
+		<Unit filename="Lib/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h" />
+		<Unit filename="Lib/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h" />
+		<Unit filename="Lib/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h" />
+		<Unit filename="Lib/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Lib/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Lib/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc_ex.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Lib/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cortex.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Lib/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Lib/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma_ex.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Lib/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Lib/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ex.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Lib/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ramfunc.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Lib/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_gpio.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Lib/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Lib/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr_ex.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Lib/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Lib/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc_ex.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Lib/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Lib/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim_ex.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Lib/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_uart.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Lib/Drivers/stm32f4xx_hal_conf.h" />
+		<Unit filename="Lib/Drivers/stm32f4xx_hal_msp.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Lib/Drivers/stm32f4xx_it.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Lib/Drivers/stm32f4xx_it.h" />
+		<Unit filename="Lib/Drivers/system_stm32f4xx.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Src/main.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="ld/STM32F401RETx_FLASH.ld" />
+		<Unit filename="vectors/startup_stm32f401xe.s">
+			<Option compilerVar="CC" />
+			<Option compiler="gnu_gcc_compiler_for_arm_for_stm32f401re" use="1" buildCommand='arm-none-eabi-gcc -x assembler-with-cpp -c -mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=hard -DUSE_HAL_DRIVER -DSTM32F401xE -ILib/Drivers/CMSIS/Device/ST/STM32F4xx/Include -ILib/Drivers/CMSIS/Include -ILib/Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates -ILib/Drivers/STM32F4xx_HAL_Driver/Inc -ILib/Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -ILib/Drivers -IInc -Og -Wall -Wall -fdata-sections -ffunction-sections -g -gdwarf-2 -MMD -MP -MF&quot;default/vectors/startup_stm32f401xe.d&quot; -MT&quot;default/vectors/startup_stm32f401xe.d&quot; vectors/startup_stm32f401xe.s -o default/vectors/startup_stm32f401xe.o' />
+		</Unit>
+		<Extensions>
+			<envvars />
+			<code_completion />
+			<debugger>
+				<remote_debugging>
+					<options conn_type="0" serial_baud="115200" ip_address="localhost" ip_port="4242" additional_cmds="monitor reset halt&#x0A;load" />
+				</remote_debugging>
+			</debugger>
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>
