@@ -189,7 +189,7 @@
 		<Unit filename="ld/STM32F401RETx_FLASH.ld" />
 		<Unit filename="vectors/startup_stm32f401xe.s">
 			<Option compilerVar="CC" />
-			<Option compiler="gnu_gcc_compiler_for_arm_for_stm32f401re" use="1" buildCommand='arm-none-eabi-gcc -x assembler-with-cpp -c -mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=hard -DUSE_HAL_DRIVER -DSTM32F401xE -ILib/Drivers/CMSIS/Device/ST/STM32F4xx/Include -ILib/Drivers/CMSIS/Include -ILib/Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates -ILib/Drivers/STM32F4xx_HAL_Driver/Inc -ILib/Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -ILib/Drivers -IInc -Og -Wall -Wall -fdata-sections -ffunction-sections -g -gdwarf-2 -MMD -MP -MF&quot;default/vectors/startup_stm32f401xe.d&quot; -MT&quot;default/vectors/startup_stm32f401xe.d&quot; vectors/startup_stm32f401xe.s -o default/vectors/startup_stm32f401xe.o' />
+			<Option compiler="gnu_gcc_compiler_for_arm_for_stm32f401re" use="1" buildCommand='arm-none-eabi-gcc -x assembler-with-cpp -c -mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=hard -DUSE_HAL_DRIVER -DSTM32F401xE -ILib/Drivers/CMSIS/Device/ST/STM32F4xx/Include -ILib/Drivers/CMSIS/Include -ILib/Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates -ILib/Drivers/STM32F4xx_HAL_Driver/Inc -ILib/Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -ILib/Drivers -IInc -Og -Wall -Wall -fdata-sections -ffunction-sections -g -gdwarf-2 -MMD -MP -MF&quot;default/CodeBlocksTestProject/vectors/startup_stm32f401xe.d&quot; -MT&quot;default/CodeBlocksTestProject/vectors/startup_stm32f401xe.d&quot; vectors/startup_stm32f401xe.s -o default/CodeBlocksTestProject/vectors/startup_stm32f401xe.o' />
 		</Unit>
 		<Extensions>
 			<envvars />
