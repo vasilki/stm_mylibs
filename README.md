@@ -10,6 +10,10 @@ LED - onboard LED handler
 timers - timers base on TIM9 and TIM10
 
 
+
+ADC can be used with timers (set #define USE_TIMERS) or with default delay
+
+
 Environment:
 STM32 NUCLEO-F401RE
 Linux Mint 18.2 Sonya
