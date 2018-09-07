@@ -21,7 +21,7 @@ void uart_Init(UART_HandleTypeDef *par_uart)
 void uart_Printf(UART_HandleTypeDef *par_uart,const uint8_t *par_string)
 {
   /*HAL_StatusTypeDef loc_status;*/
-  HAL_UART_Transmit(par_uart, (uint8_t*)par_string, strnlen(par_string,K_MAX_STRING),0xFFFF);
+  HAL_UART_Transmit(par_uart, (uint8_t*)par_string, strnlen((char*)par_string,K_MAX_STRING),0xFFFF);
 
   return;
 }
@@ -31,7 +31,7 @@ void uart_PrintfBuildVersion(UART_HandleTypeDef *par_uart)
   /*HAL_StatusTypeDef loc_status;*/
   uint8_t loc_buf[K_MAX_STRING];
 
-  snprintf(loc_buf,sizeof(loc_buf),"Project:%s Date:%s Time:%s",GL_PROJECT_NAME,__DATE__,__TIME__);
+  snprintf((char*)loc_buf,sizeof(loc_buf),"Project:%s Date:%s Time:%s",GL_PROJECT_NAME,__DATE__,__TIME__);
   uart_Printf(par_uart,loc_buf);
 
   return;

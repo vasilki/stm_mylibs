@@ -30,6 +30,7 @@
 			<Add option="-gdwarf-2" />
 			<Add option="-DUSE_HAL_DRIVER" />
 			<Add option="-DSTM32F401xE" />
+			<Add option="-DUSE_TIMERS" />
 			<Add directory="Lib/Drivers/CMSIS/Device/ST/STM32F4xx/Include" />
 			<Add directory="Lib/Drivers/CMSIS/Include" />
 			<Add directory="Lib/Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates" />
