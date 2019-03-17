@@ -31,6 +31,13 @@ static uint32_t GL_PIN_D4;           // GPIO_Pin_4          // PB4
 
 static GPIO_TypeDef *GL_LINE;
 
+typedef struct
+{
+  uint8_t display_on_off_control; /*display on/off control, blinking cursor, cursor on/off*/
+}T_LCD_Status;
+
+
+T_LCD_Status GL_LCD_STATUS;
 
 /*Delay function wich you should find out the coefficients of a*/
 /*
@@ -64,6 +71,43 @@ void delay(uint32_t par_us)
 
 
 /*delay in microseconds using DWT timer*/
+
+static void lcd_resetbit(uint8_t *par_byte, uint8_t par_bit)
+{
+  uint8_t loc_temp;
+
+  if(par_bit > 8)
+  {
+    loc_temp = 1 << (8 - 1);
+  }
+  else
+  {
+    loc_temp = 1 << (par_bit - 1);
+  }
+
+  loc_temp ^= 0xFF;
+  *par_byte &= loc_temp;
+
+  return;
+}
+
+static void lcd_setbit(uint8_t *par_byte, uint8_t par_bit)
+{
+  uint8_t loc_temp;
+
+  if(par_bit > 8)
+  {
+    loc_temp = 1 << (8 - 1);
+  }
+  else
+  {
+    loc_temp = 1 << (par_bit - 1);
+  }
+
+  *par_byte |= loc_temp;
+
+  return;
+}
 
 void delay(uint32_t par_us)
 {
@@ -253,9 +297,9 @@ static void lcd_SendByte(char par_ByteToSend, char par_B_IsData)
 }
 
 /*Set cursor position (0,0) - is first ROW, first column*/
-void lcd_SetCursor(char par_Row, char par_Col)
+void lcd_SetCursor(uint8_t par_Row, uint8_t par_Col)
 {
-  char loc_address;
+  uint8_t loc_address;
   
   if (par_Row == 0)
   {
@@ -266,9 +310,28 @@ void lcd_SetCursor(char par_Row, char par_Col)
     loc_address = 0x40;
   }
   loc_address |= par_Col;
-  loc_address |= (char)0x80;
+  loc_address |= (uint8_t)0x80;
   lcd_SendByte(loc_address, 0);
   delay(K_DELAY_MORE_THAN_39uS);
+
+  return;
+}
+
+/*Cursor on*/
+void lcd_CursorON()
+{
+  if((GL_LCD_STATUS.display_on_off_control & 0x2) == 0x0)
+  {
+    lcd_setbit(&GL_LCD_STATUS.display_on_off_control,0x2);
+    lcd_setbit(&GL_LCD_STATUS.display_on_off_control,0x1);
+    lcd_SendByte(GL_LCD_STATUS.display_on_off_control, 0);
+    //lcd_SendByte(0xE, 0);
+    delay(K_DELAY_MORE_THAN_39uS);
+  }
+  else
+  {
+    /*nothing to do*/
+  }
 
   return;
 }
@@ -276,17 +339,35 @@ void lcd_SetCursor(char par_Row, char par_Col)
 /*Cursor off*/
 void lcd_CursorOFF()
 {
-  lcd_SendByte(0xC, 0);
-  delay(K_DELAY_MORE_THAN_39uS);
-  
+  if((GL_LCD_STATUS.display_on_off_control & 0x2) == 0x2)
+  {
+    lcd_resetbit(&GL_LCD_STATUS.display_on_off_control,0x2);
+    lcd_resetbit(&GL_LCD_STATUS.display_on_off_control,0x1);
+    lcd_SendByte(GL_LCD_STATUS.display_on_off_control, 0);
+    //lcd_SendByte(0xC, 0);
+    delay(K_DELAY_MORE_THAN_39uS);
+  }
+  else
+  {
+    /*nothing to do*/
+  }
   return;
 }
 
 /*Set freezing cursor*/
 void lcd_SetCursorFreeze()
 {
-  lcd_SendByte(0xE, 0); 
-  delay(K_DELAY_MORE_THAN_39uS);
+  if((GL_LCD_STATUS.display_on_off_control & 0x1) == 0x1)
+  {
+    lcd_resetbit(&GL_LCD_STATUS.display_on_off_control,0x1);
+    lcd_SendByte(GL_LCD_STATUS.display_on_off_control, 0);
+    //lcd_SendByte(0xE, 0);
+    delay(K_DELAY_MORE_THAN_39uS);
+  }
+  else
+  {
+    /*nothing to do*/
+  }
   
   return;
 }
@@ -294,8 +375,17 @@ void lcd_SetCursorFreeze()
 /*Set blinking cursor*/
 void lcd_SetCursorBlink()
 {
-  lcd_SendByte(0xF, 0); 
-  delay(K_DELAY_MORE_THAN_39uS);
+  if((GL_LCD_STATUS.display_on_off_control & 0x1) == 0x0)
+  {
+    lcd_setbit(&GL_LCD_STATUS.display_on_off_control,0x1);
+    lcd_SendByte(GL_LCD_STATUS.display_on_off_control, 0);
+    //lcd_SendByte(0xF, 0);
+    delay(K_DELAY_MORE_THAN_39uS);
+  }
+  else
+  {
+    /*nothing to do*/
+  }
   
   return;
 }
@@ -306,6 +396,15 @@ void lcd_ClearLCDScreen()
 {
   lcd_SendByte(0x01, 0);
   delay(K_DELAY_MORE_THAN_1530uS);
+  lcd_SendByte(0x02, 0);
+  delay(K_DELAY_MORE_THAN_1530uS);
+
+  return;
+}
+
+/*Return carriage*/
+void lcd_Return()
+{
   lcd_SendByte(0x02, 0);
   delay(K_DELAY_MORE_THAN_1530uS);
 
@@ -352,6 +451,8 @@ void lcd_Init(T_LCD_GPIO_Parameters par_parameters /*GPIOx*/)
   /*Display ON/OFF control*/
   lcd_SendByte(0xF,0);
   delay(K_DELAY_MORE_THAN_39uS);  
+  GL_LCD_STATUS.display_on_off_control = 0xF;
+
   /*Display clear*/
   lcd_SendByte(0x1,0);
   /*delay more than 1.53ms*/

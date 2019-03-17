@@ -23,13 +23,18 @@ typedef struct
 
 void lcd_PrintStr(char *par_string);
 void lcd_ClearLCDScreen();
-void lcd_SetCursor(char Row, char Col);
+void lcd_SetCursor(uint8_t Row, uint8_t Col);
 void lcd_Init(T_LCD_GPIO_Parameters par_parameters /*GPIOx*/);
+
+void lcd_CursorON();
 
 void lcd_CursorOFF();
 
 void lcd_SetCursorFreeze();
 
 void lcd_SetCursorBlink();
+
+/*Return carriage*/
+void lcd_Return();
 
 #endif /* LCD_1602_H_ */
