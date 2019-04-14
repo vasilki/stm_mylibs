@@ -31,7 +31,7 @@ void uart_PrintfBuildVersion(UART_HandleTypeDef *par_uart)
   /*HAL_StatusTypeDef loc_status;*/
   uint8_t loc_buf[K_MAX_STRING];
 
-  snprintf((char*)loc_buf,sizeof(loc_buf),"Project:%s Date:%s Time:%s",GL_PROJECT_NAME,__DATE__,__TIME__);
+  snprintf((char*)loc_buf,sizeof(loc_buf),"Project:%s Date:%s Time:%s\n\r",GL_PROJECT_NAME,__DATE__,__TIME__);
   uart_Printf(par_uart,loc_buf);
 
   return;
