@@ -14,5 +14,7 @@ extern unsigned int tim_GetPeriod(void);
 extern void tim_StartTimer(TIM_HandleTypeDef *par_htim);
 extern unsigned int tim_GetTimeFromStartMS(void);
 extern unsigned int tim_GetTimeFromStartSEC(void);
+extern void tim_InitTimer();
+
 
 #endif /* TIMERS_H_ */
