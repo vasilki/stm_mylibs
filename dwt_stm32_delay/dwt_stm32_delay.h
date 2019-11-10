@@ -34,6 +34,15 @@ inline void DWT_Delay_us(volatile uint32_t microseconds)
 
   return;
 }
+
+inline void DWT_Delay_ms(volatile uint32_t milliseconds)
+{
+  DWT_Delay_us(milliseconds * 1000);
+
+  return;
+}
+
+
 /*
   
 uint32_t DWT_GetTimeFromStartMS(void);
