@@ -9,14 +9,8 @@
 
 static uint32_t gl_time = 0;
 static uint32_t gl_time_ms = 0;
-static uint32_t gl_time_sec = 0;
-//static uint32_t gl_freq = 0;
 
 static void tim_UpdateTimeFromStartMS(TIM_HandleTypeDef *par_htim);
-static void tim_UpdateTimeFromStartSEC(TIM_HandleTypeDef *par_htim);
-
-extern TIM_HandleTypeDef htim9;
-extern TIM_HandleTypeDef htim10;
 
 void tim_UpdatePeriod(void)
 {
@@ -38,12 +32,9 @@ void tim_StartTimer(TIM_HandleTypeDef *par_htim)
 
 
 
-void tim_InitTimer()
+void tim_InitTimer(TIM_HandleTypeDef *par_htim)
 {
-  /*division by two because APB2 bus*/
-//  gl_freq = HAL_RCC_GetSysClockFreq() / 2;
-  tim_StartTimer(&htim9);
-  tim_StartTimer(&htim10);
+  tim_StartTimer(par_htim);
   
   return;
 }
@@ -56,33 +47,9 @@ void tim_UpdateTimeFromStartMS(TIM_HandleTypeDef *par_htim)
   return;
 }
 
-void tim_UpdateTimeFromStartSEC(TIM_HandleTypeDef *par_htim)
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *par_htim)
 {
-  gl_time_sec += 1; 
-    
-  return;
-}
-
-void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
-{
-  if(htim->Instance == TIM9)
-  {
-    tim_UpdateTimeFromStartMS(htim);
-
-  }
-  else
-  {
-    /*nothing to do - it is not our interrupt*/
-  }
-
-  if(htim->Instance == TIM10)
-  {
-    tim_UpdateTimeFromStartSEC(htim);
-  }
-  else
-  {
-    /*nothing to do - it is not our interrupt*/
-  }
+  tim_UpdateTimeFromStartMS(par_htim);
 
   return;
 }
@@ -94,5 +61,5 @@ uint32_t tim_GetTimeFromStartMS(void)
 
 uint32_t tim_GetTimeFromStartSEC(void)
 {
-  return gl_time_sec;
+  return tim_GetTimeFromStartMS() / 1000;
 }
