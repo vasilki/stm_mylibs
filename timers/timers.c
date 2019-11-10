@@ -7,20 +7,28 @@
 
 #include "stm32f4xx_hal.h"
 
-static uint32_t gl_time = 0;
-static uint32_t gl_time_ms = 0;
+typedef struct
+{
+  TIM_HandleTypeDef *htim;
+  uint32_t time_ms;
+  uint32_t time_sec;
+  uint32_t periodnumber;
+}T_TIMERS;
+
+static T_TIMERS GL_TIMERS;
 
 static void tim_UpdateTimeFromStartMS(TIM_HandleTypeDef *par_htim);
 
 void tim_UpdatePeriod(void)
 {
-  gl_time++;
+  GL_TIMERS.periodnumber++;
+
   return;
 }
 
 unsigned int tim_GetPeriod(void)
 {
-  return gl_time;
+  return GL_TIMERS.periodnumber;
 }
 
 void tim_StartTimer(TIM_HandleTypeDef *par_htim)
@@ -34,6 +42,11 @@ void tim_StartTimer(TIM_HandleTypeDef *par_htim)
 
 void tim_InitTimer(TIM_HandleTypeDef *par_htim)
 {
+  GL_TIMERS.htim = par_htim;
+  GL_TIMERS.periodnumber = 0;
+  GL_TIMERS.time_ms = 0;
+  GL_TIMERS.time_sec = 0;
+
   tim_StartTimer(par_htim);
   
   return;
@@ -42,24 +55,32 @@ void tim_InitTimer(TIM_HandleTypeDef *par_htim)
 
 void tim_UpdateTimeFromStartMS(TIM_HandleTypeDef *par_htim)
 {
-  gl_time_ms += 1;
+  GL_TIMERS.time_ms += 1;
+  GL_TIMERS.time_sec = GL_TIMERS.time_ms / 1000;
 
   return;
 }
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *par_htim)
 {
-  tim_UpdateTimeFromStartMS(par_htim);
+  if(GL_TIMERS.htim->Instance == par_htim->Instance)
+  {
+    tim_UpdateTimeFromStartMS(par_htim);
+  }
+  else
+  {
+    /*nothing to do - it is not our interrupt*/
+  }
 
   return;
 }
 
 uint32_t tim_GetTimeFromStartMS(void)
 {
-  return gl_time_ms;
+  return GL_TIMERS.time_ms;
 }
 
 uint32_t tim_GetTimeFromStartSEC(void)
 {
-  return tim_GetTimeFromStartMS() / 1000;
+  return GL_TIMERS.time_sec;
 }
