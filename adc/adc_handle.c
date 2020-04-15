@@ -1,4 +1,7 @@
 #include "stm32f4xx_hal.h"
+
+#ifdef __STM32F4xx_ADC_H
+
 #include "timers.h"
 #define ADC_TIMEOUT 100 /*ms*/
 #define ADC_HAL_DELAY 50 /*ms*/
@@ -52,3 +55,7 @@ unsigned int adc_GetNormalizeValue(ADC_HandleTypeDef *par_hadc, unsigned int par
 
   return (adc_GetValue(par_hadc) / par_coeff);
 }
+
+#endif /* __STM32F4xx_ADC_H */
+
+
