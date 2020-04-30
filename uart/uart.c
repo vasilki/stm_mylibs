@@ -6,33 +6,38 @@
  */
 
 #include "stm32f4xx_hal.h"
+
+#ifdef __STM32F4xx_HAL_UART_H
 #include <string.h>
 
 #define K_MAX_STRING 200
 extern uint8_t GL_PROJECT_NAME[];
 
+static UART_HandleTypeDef *GL_UART;
+
 void uart_Init(UART_HandleTypeDef *par_uart)
 {
-  HAL_UART_Transmit(par_uart, (uint8_t*)"\n\r", strnlen("\n\r",K_MAX_STRING),0xFFFF);
+  GL_UART = par_uart;
+  HAL_UART_Transmit(GL_UART, (uint8_t*)"\n\r", strnlen("\n\r",K_MAX_STRING),0xFFFF);
 
   return;
 }
 
-void uart_Printf(UART_HandleTypeDef *par_uart,const uint8_t *par_string)
+void uart_Printf(const uint8_t *par_string)
 {
   /*HAL_StatusTypeDef loc_status;*/
-  HAL_UART_Transmit(par_uart, (uint8_t*)par_string, strnlen((char*)par_string,K_MAX_STRING),0xFFFF);
+  HAL_UART_Transmit(GL_UART, (uint8_t*)par_string, strnlen((char*)par_string,K_MAX_STRING),0xFFFF);
 
   return;
 }
 
-void uart_PrintfBuildVersion(UART_HandleTypeDef *par_uart)
+void uart_PrintfBuildVersion()
 {
   /*HAL_StatusTypeDef loc_status;*/
   uint8_t loc_buf[K_MAX_STRING];
 
   snprintf((char*)loc_buf,sizeof(loc_buf),"Project:%s Date:%s Time:%s\n\r",GL_PROJECT_NAME,__DATE__,__TIME__);
-  uart_Printf(par_uart,loc_buf);
+  uart_Printf(loc_buf);
 
   return;
 }
@@ -56,7 +61,7 @@ static void uart_SetBinString(unsigned int par_value, char *par_string)
 
 
 
-void uart_PrintfInteger(UART_HandleTypeDef *par_uart, int par_value, const char *par_base)
+void uart_PrintfInteger(int par_value, const char *par_base)
 {
   char loc_buff[40];
 
@@ -82,9 +87,12 @@ void uart_PrintfInteger(UART_HandleTypeDef *par_uart, int par_value, const char 
     /*nothing to do*/
   }
 
-  HAL_UART_Transmit(par_uart, (uint8_t*)loc_buff, strnlen(loc_buff,K_MAX_STRING),0xFFFF);
+  HAL_UART_Transmit(GL_UART, (uint8_t*)loc_buff, strnlen(loc_buff,K_MAX_STRING),0xFFFF);
 
   return;
 }
+
+#endif /* __STM32F4xx_HAL_UART_H */
+
 
 
