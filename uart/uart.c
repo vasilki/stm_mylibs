@@ -9,6 +9,7 @@
 
 #ifdef __STM32F4xx_HAL_UART_H
 #include <string.h>
+#include <stdio.h>
 
 #define K_MAX_STRING 200
 extern uint8_t GL_PROJECT_NAME[];

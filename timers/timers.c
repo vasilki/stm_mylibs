@@ -7,7 +7,7 @@
 
 #include "stm32f4xx_hal.h"
 
-#ifdef __STM32F4xx_HAL_TIM_H
+#ifdef STM32F4xx_HAL_TIM_H
 
 typedef struct
 {
@@ -87,6 +87,6 @@ uint32_t tim_GetTimeFromStartSEC(void)
   return GL_TIMERS.time_sec;
 }
 
-#endif /* __STM32F4xx_HAL_TIM_H */
+#endif /* STM32F4xx_HAL_TIM_H */
 
 
