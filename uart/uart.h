@@ -16,6 +16,7 @@ void uart_Init(UART_HandleTypeDef *par_uart);
 void uart_Printf(const uint8_t *par_string);
 void uart_PrintfInteger(int par_value, const char *par_base);
 void uart_PrintfBuildVersion(void);
+void uart_Scanf(uint8_t *par_buffer, uint32_t *par_size);
 
 #define UART_PRINTFINTEGER(A,B) \
 { \

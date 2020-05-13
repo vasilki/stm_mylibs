@@ -93,6 +93,34 @@ void uart_PrintfInteger(int par_value, const char *par_base)
   return;
 }
 
+
+void uart_Scanf(uint8_t *par_buffer, uint32_t *par_size)
+{
+  uint16_t loc_size = 0;
+  HAL_StatusTypeDef loc_status;
+
+
+  if((GL_UART != 0) && (par_buffer != 0) && (par_size != 0))
+  {
+    loc_status = HAL_UART_Receive_IT(GL_UART, par_buffer, &loc_size);
+    if(loc_status == HAL_OK)
+    {
+      *par_size = loc_size;
+    }
+    else
+    {
+      *par_size = 0;
+    }
+  }
+  else
+  {
+    /*nothing to do*/
+  }
+
+  return;
+}
+
+
 #endif /* __STM32F4xx_HAL_UART_H */
 
 
