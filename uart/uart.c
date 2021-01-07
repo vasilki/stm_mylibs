@@ -98,18 +98,25 @@ void uart_Scanf(uint8_t *par_buffer, uint32_t *par_size)
 {
   uint16_t loc_size = 0;
   HAL_StatusTypeDef loc_status;
-
+  HAL_UART_StateTypeDef loc_state;
 
   if((GL_UART != 0) && (par_buffer != 0) && (par_size != 0))
   {
-    loc_status = HAL_UART_Receive_IT(GL_UART, par_buffer, &loc_size);
-    if(loc_status == HAL_OK)
+    loc_state = HAL_UART_STATE_BUSY_TX_RX;
+    while ((loc_state == HAL_UART_STATE_BUSY_RX) || (loc_state == HAL_UART_STATE_BUSY_TX_RX))
     {
-      *par_size = loc_size;
+      loc_state = HAL_UART_GetState(GL_UART);
+    }
+
+    loc_status = HAL_UART_Receive_IT(GL_UART, par_buffer, *par_size);
+    if(loc_status != HAL_OK)
+    {
+      *par_size = 0;
     }
     else
     {
-      *par_size = 0;
+      *par_size = loc_status;
+      /*nothing to do*/
     }
   }
   else
