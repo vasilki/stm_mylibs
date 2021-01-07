@@ -127,6 +127,125 @@ void uart_Scanf(uint8_t *par_buffer, uint32_t *par_size)
   return;
 }
 
+static HAL_UART_StateTypeDef GL_UART_STATE = HAL_UART_STATE_RESET;
+#define K_CIRCULAR_BUFF_LENGTH 10
+#define K_SEGMENT_BUFF_SIZE 20
+static uint8_t GL_UART_BUFF[K_CIRCULAR_BUFF_LENGTH*K_SEGMENT_BUFF_SIZE];
+static uint32_t GL_UART_BUFF_SIZE;
+
+typedef struct
+{
+  uint8_t buffer[K_CIRCULAR_BUFF_LENGTH*K_SEGMENT_BUFF_SIZE];
+  uint32_t data_size[K_CIRCULAR_BUFF_LENGTH];
+  uint8_t *offset;
+  uint32_t segment_size;
+  uint32_t circular_length;
+  uint32_t get_index;
+  uint32_t add_offset;
+}T_CIRCULAR_BUFFER;
+
+static T_CIRCULAR_BUFFER GL_BUFFER;
+
+static void uart_circbuff_init()
+{
+  GL_BUFFER.segment_size = K_SEGMENT_BUFF_SIZE;
+  GL_BUFFER.circular_length = K_CIRCULAR_BUFF_LENGTH;
+  memset(GL_BUFFER.buffer, 0, sizeof(GL_BUFFER.buffer));
+  memset(GL_BUFFER.data_size, 0, sizeof(GL_BUFFER.data_size));
+  GL_BUFFER.offset = &GL_BUFFER.buffer[0];
+  GL_BUFFER.get_index = 0;
+  GL_BUFFER.add_offset = 0;
+
+  return;
+}
+
+static void uart_circbuff_add(uint8_t *par_buff, uint32_t par_size)
+{
+  uint32_t loc_size = 0;
+
+  if((par_buff != 0) && (par_size > 0))
+  {
+    if(par_size > GL_BUFFER.segment_size)
+    {
+      loc_size = GL_BUFFER.segment_size;
+    }
+    else
+    {
+      loc_size = par_size;
+    }
+
+    memcpy(GL_BUFFER.offset,par_buff,loc_size);
+    GL_BUFFER.offset += GL_BUFFER.segment_size;
+    *GL_BUFFER.data_size = loc_size;
+    GL_BUFFER.data_size++;
+
+
+    if(GL_BUFFER.offset > &GL_BUFFER.buffer[sizeof(GL_BUFFER.buffer)])
+    {
+      GL_BUFFER.offset = &GL_BUFFER.buffer[0];
+      GL_BUFFER.data_size = &GL_BUFFER.data_size[0];
+    }
+    else
+    {
+      /*nothing to do*/
+    }
+  }
+  else
+  {
+    /*nothing to do*/
+  }
+
+  return;
+}
+
+static void uart_circbuff_get(uint8_t *par_buff, uint32_t *par_size)
+{
+  if((par_buff != 0) && (par_size != 0))
+  {
+    if(GL_BUFFER.data_size[GL_BUFFER.get_index] != 0)
+    {
+      memcpy(par_buff, &GL_BUFFER.buffer[GL_BUFFER.get_index * GL_BUFFER.segment_size],GL_BUFFER.data_size[GL_BUFFER.get_index]);
+      *par_size = GL_BUFFER.data_size[GL_BUFFER.get_index];
+      GL_BUFFER.data_size[GL_BUFFER.get_index] = 0;
+      GL_BUFFER.get_index = (GL_BUFFER.get_index + 1) % GL_BUFFER.circular_length;
+    }
+    else
+    {
+      *par_size = 0;
+    }
+  }
+  else
+  {
+    /*nothing to do*/
+  }
+
+  return;
+}
+
+
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *par_uart)
+{
+  HAL_StatusTypeDef loc_status;
+
+  if ((par_uart != 0) && (GL_UART_STATE == HAL_UART_STATE_READY))
+  {
+    GL_UART_STATE = HAL_UART_STATE_READY;
+    loc_status = HAL_UART_Receive_IT(GL_UART, GL_UART_BUFF, GL_UART_BUFF_SIZE);
+  }
+  else
+  {
+
+  }
+
+  return;
+}
+
+
+void HAL_UART_TxCpltCallback(UART_HandleTypeDef *par_uart)
+{
+
+  return;
+}
 
 #endif /* __STM32F4xx_HAL_UART_H */
 
