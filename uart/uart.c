@@ -10,6 +10,7 @@
 #ifdef __STM32F4xx_HAL_UART_H
 #include <string.h>
 #include <stdio.h>
+#include "circular_buffer.h"
 
 #define K_MAX_STRING 200
 extern uint8_t GL_PROJECT_NAME[];
@@ -20,6 +21,7 @@ void uart_Init(UART_HandleTypeDef *par_uart)
 {
   GL_UART = par_uart;
   HAL_UART_Transmit(GL_UART, (uint8_t*)"\n\r", strnlen("\n\r",K_MAX_STRING),0xFFFF);
+  circular_buffer_init();
 
   return;
 }
@@ -96,28 +98,9 @@ void uart_PrintfInteger(int par_value, const char *par_base)
 
 void uart_Scanf(uint8_t *par_buffer, uint32_t *par_size)
 {
-  uint16_t loc_size = 0;
-  HAL_StatusTypeDef loc_status;
-  HAL_UART_StateTypeDef loc_state;
-
-  if((GL_UART != 0) && (par_buffer != 0) && (par_size != 0))
+  if((par_buffer != 0) && (par_size != 0))
   {
-    loc_state = HAL_UART_STATE_BUSY_TX_RX;
-    while ((loc_state == HAL_UART_STATE_BUSY_RX) || (loc_state == HAL_UART_STATE_BUSY_TX_RX))
-    {
-      loc_state = HAL_UART_GetState(GL_UART);
-    }
-
-    loc_status = HAL_UART_Receive_IT(GL_UART, par_buffer, *par_size);
-    if(loc_status != HAL_OK)
-    {
-      *par_size = 0;
-    }
-    else
-    {
-      *par_size = loc_status;
-      /*nothing to do*/
-    }
+    circular_buffer_get(par_buffer, par_size);
   }
   else
   {
@@ -127,114 +110,35 @@ void uart_Scanf(uint8_t *par_buffer, uint32_t *par_size)
   return;
 }
 
-static HAL_UART_StateTypeDef GL_UART_STATE = HAL_UART_STATE_RESET;
-#define K_CIRCULAR_BUFF_LENGTH 10
-#define K_SEGMENT_BUFF_SIZE 20
-static uint8_t GL_UART_BUFF[K_CIRCULAR_BUFF_LENGTH*K_SEGMENT_BUFF_SIZE];
-static uint32_t GL_UART_BUFF_SIZE;
-
-typedef struct
-{
-  uint8_t buffer[K_CIRCULAR_BUFF_LENGTH*K_SEGMENT_BUFF_SIZE];
-  uint32_t data_size[K_CIRCULAR_BUFF_LENGTH];
-  uint8_t *offset;
-  uint32_t segment_size;
-  uint32_t circular_length;
-  uint32_t get_index;
-  uint32_t add_offset;
-}T_CIRCULAR_BUFFER;
-
-static T_CIRCULAR_BUFFER GL_BUFFER;
-
-static void uart_circbuff_init()
-{
-  GL_BUFFER.segment_size = K_SEGMENT_BUFF_SIZE;
-  GL_BUFFER.circular_length = K_CIRCULAR_BUFF_LENGTH;
-  memset(GL_BUFFER.buffer, 0, sizeof(GL_BUFFER.buffer));
-  memset(GL_BUFFER.data_size, 0, sizeof(GL_BUFFER.data_size));
-  GL_BUFFER.offset = &GL_BUFFER.buffer[0];
-  GL_BUFFER.get_index = 0;
-  GL_BUFFER.add_offset = 0;
-
-  return;
-}
-
-static void uart_circbuff_add(uint8_t *par_buff, uint32_t par_size)
-{
-  uint32_t loc_size = 0;
-
-  if((par_buff != 0) && (par_size > 0))
-  {
-    if(par_size > GL_BUFFER.segment_size)
-    {
-      loc_size = GL_BUFFER.segment_size;
-    }
-    else
-    {
-      loc_size = par_size;
-    }
-
-    memcpy(GL_BUFFER.offset,par_buff,loc_size);
-    GL_BUFFER.offset += GL_BUFFER.segment_size;
-    *GL_BUFFER.data_size = loc_size;
-    GL_BUFFER.data_size++;
-
-
-    if(GL_BUFFER.offset > &GL_BUFFER.buffer[sizeof(GL_BUFFER.buffer)])
-    {
-      GL_BUFFER.offset = &GL_BUFFER.buffer[0];
-      GL_BUFFER.data_size = &GL_BUFFER.data_size[0];
-    }
-    else
-    {
-      /*nothing to do*/
-    }
-  }
-  else
-  {
-    /*nothing to do*/
-  }
-
-  return;
-}
-
-static void uart_circbuff_get(uint8_t *par_buff, uint32_t *par_size)
-{
-  if((par_buff != 0) && (par_size != 0))
-  {
-    if(GL_BUFFER.data_size[GL_BUFFER.get_index] != 0)
-    {
-      memcpy(par_buff, &GL_BUFFER.buffer[GL_BUFFER.get_index * GL_BUFFER.segment_size],GL_BUFFER.data_size[GL_BUFFER.get_index]);
-      *par_size = GL_BUFFER.data_size[GL_BUFFER.get_index];
-      GL_BUFFER.data_size[GL_BUFFER.get_index] = 0;
-      GL_BUFFER.get_index = (GL_BUFFER.get_index + 1) % GL_BUFFER.circular_length;
-    }
-    else
-    {
-      *par_size = 0;
-    }
-  }
-  else
-  {
-    /*nothing to do*/
-  }
-
-  return;
-}
-
+//static HAL_UART_StateTypeDef GL_UART_STATE = HAL_UART_STATE_RESET;
+static uint8_t GL_TEMP_UART_BUFFER[K_MAX_STRING];
+static uint32_t GL_TEMP_UART_BUFFER_OFFSET = 0;
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *par_uart)
 {
   HAL_StatusTypeDef loc_status;
+ // uint8_t loc_byte = 0;
 
-  if ((par_uart != 0) && (GL_UART_STATE == HAL_UART_STATE_READY))
+  if (par_uart != 0)
   {
-    GL_UART_STATE = HAL_UART_STATE_READY;
-    loc_status = HAL_UART_Receive_IT(GL_UART, GL_UART_BUFF, GL_UART_BUFF_SIZE);
+    if(GL_TEMP_UART_BUFFER[GL_TEMP_UART_BUFFER_OFFSET] == '\n')
+    {
+      /*@@SHOUD BE TAKEN OUT FROM INTERRUPT*/
+      circular_buffer_add(GL_TEMP_UART_BUFFER,strnlen(GL_TEMP_UART_BUFFER,K_MAX_STRING));
+      GL_TEMP_UART_BUFFER_OFFSET = 0;
+    }
+    else
+    {
+      GL_TEMP_UART_BUFFER_OFFSET = (GL_TEMP_UART_BUFFER_OFFSET + 1) % K_MAX_STRING;
+    }
+
+    //GL_UART_STATE = HAL_UART_STATE_RESET;
+    loc_status = HAL_UART_Receive_IT(GL_UART, &GL_TEMP_UART_BUFFER[GL_TEMP_UART_BUFFER_OFFSET], sizeof(GL_TEMP_UART_BUFFER[0]));
+    //GL_UART_STATE = HAL_UART_STATE_READY;
   }
   else
   {
-
+    /*nothing to do*/
   }
 
   return;
