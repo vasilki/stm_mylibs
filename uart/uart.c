@@ -11,17 +11,15 @@
 #include <string.h>
 #include <stdio.h>
 #include "circular_buffer.h"
+#include "uart.h"
 
-#define K_MAX_STRING 200
 extern uint8_t GL_PROJECT_NAME[];
 
 static UART_HandleTypeDef *GL_UART;
 
 //static HAL_UART_StateTypeDef GL_UART_STATE = HAL_UART_STATE_RESET;
-static uint8_t GL_TEMP_UART_BUFFER[K_MAX_STRING];
+static uint8_t GL_TEMP_UART_BUFFER[K_MAX_STRING] = {0};
 static uint32_t GL_TEMP_UART_BUFFER_OFFSET = 0;
-
-extern uint8_t GL_TEXT[200];
 
 void uart_Init(UART_HandleTypeDef *par_uart)
 {
@@ -30,7 +28,6 @@ void uart_Init(UART_HandleTypeDef *par_uart)
   GL_UART = par_uart;
   HAL_UART_Transmit(GL_UART, (uint8_t*)"\n\r", strnlen("\n\r",K_MAX_STRING),0xFFFF);
   circular_buffer_init();
-  memset(GL_TEMP_UART_BUFFER,0,sizeof(GL_TEMP_UART_BUFFER));
   loc_status = HAL_UART_Receive_IT(GL_UART, &GL_TEMP_UART_BUFFER[GL_TEMP_UART_BUFFER_OFFSET], sizeof(GL_TEMP_UART_BUFFER[0]));
 
   return;
@@ -111,15 +108,6 @@ void uart_Scanf(uint8_t *par_buffer, uint32_t *par_size)
   if((par_buffer != 0) && (par_size != 0))
   {
     circular_buffer_get(par_buffer, par_size);
-    if(*par_size > 0)
-    {
-      snprintf(GL_TEXT,sizeof(GL_TEXT),"%s",par_buffer);
-      uart_Printf(par_buffer);
-    }
-    else
-    {
-      /*nothing to do*/
-    }
   }
   else
   {
@@ -134,24 +122,21 @@ void uart_Scanf(uint8_t *par_buffer, uint32_t *par_size)
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *par_uart)
 {
   HAL_StatusTypeDef loc_status;
- // uint8_t loc_byte = 0;
 
   if (par_uart == GL_UART)
   {
     if((GL_TEMP_UART_BUFFER[GL_TEMP_UART_BUFFER_OFFSET] == '\r') || GL_TEMP_UART_BUFFER[GL_TEMP_UART_BUFFER_OFFSET] == '\n')
     {
       /*@@SHOUD BE TAKEN OUT FROM INTERRUPT*/
-      circular_buffer_add(GL_TEMP_UART_BUFFER,strnlen((int8_t*)GL_TEMP_UART_BUFFER,K_MAX_STRING));
+      circular_buffer_add(GL_TEMP_UART_BUFFER,strnlen(GL_TEMP_UART_BUFFER,K_MAX_STRING) - 1); /*-1 - remove carriage return*/
+      memset(GL_TEMP_UART_BUFFER,0,GL_TEMP_UART_BUFFER_OFFSET + 1); /*+1 - carriage return or '\n'*/
       GL_TEMP_UART_BUFFER_OFFSET = 0;
     }
     else
     {
       GL_TEMP_UART_BUFFER_OFFSET = (GL_TEMP_UART_BUFFER_OFFSET + 1) % K_MAX_STRING;
     }
-
-    //GL_UART_STATE = HAL_UART_STATE_RESET;
     loc_status = HAL_UART_Receive_IT(GL_UART, &GL_TEMP_UART_BUFFER[GL_TEMP_UART_BUFFER_OFFSET], sizeof(GL_TEMP_UART_BUFFER[0]));
-    //GL_UART_STATE = HAL_UART_STATE_READY;
   }
   else
   {
@@ -161,30 +146,25 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *par_uart)
   return;
 }
 
-/*
-
-void HAL_UART_ErrorCallback(UART_HandleTypeDef *par_uart)
+void uart_ReplaceUnprintableCharacters(uint8_t *par_string, uint32_t par_legnth, uint8_t par_character)
 {
-  uint32_t loc_error;
-  if (par_uart == GL_UART)
+  uint32_t loc_count = 0;
+
+  for(loc_count = 0; loc_count < par_legnth; loc_count++)
   {
-    loc_error = HAL_UART_GetError(GL_UART);
-    snprintf(GL_TEXT,sizeof(GL_TEXT),"ERROR:%d",loc_error);
+    if((par_string[loc_count] < 0x20) || (par_string[loc_count] > 0x7E))
+    {
+      par_string[loc_count] = par_character;
+    }
+    else
+    {
+      /*nothing to do*/
+    }
   }
-  else
-  {
-    //nothing to do
-  }
+
   return;
 }
 
-
-void HAL_UART_TxCpltCallback(UART_HandleTypeDef *par_uart)
-{
-
-  return;
-}
-*/
 
 #endif /* __STM32F4xx_HAL_UART_H */
 
