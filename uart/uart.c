@@ -21,6 +21,8 @@ static UART_HandleTypeDef *GL_UART;
 static uint8_t GL_TEMP_UART_BUFFER[K_MAX_STRING];
 static uint32_t GL_TEMP_UART_BUFFER_OFFSET = 0;
 
+extern uint8_t GL_TEXT[200];
+
 void uart_Init(UART_HandleTypeDef *par_uart)
 {
   HAL_StatusTypeDef loc_status;
@@ -109,6 +111,15 @@ void uart_Scanf(uint8_t *par_buffer, uint32_t *par_size)
   if((par_buffer != 0) && (par_size != 0))
   {
     circular_buffer_get(par_buffer, par_size);
+    if(*par_size > 0)
+    {
+      snprintf(GL_TEXT,sizeof(GL_TEXT),"%s",par_buffer);
+      uart_Printf(par_buffer);
+    }
+    else
+    {
+      /*nothing to do*/
+    }
   }
   else
   {
@@ -127,10 +138,10 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *par_uart)
 
   if (par_uart == GL_UART)
   {
-    if(GL_TEMP_UART_BUFFER[GL_TEMP_UART_BUFFER_OFFSET] == '\n')
+    if((GL_TEMP_UART_BUFFER[GL_TEMP_UART_BUFFER_OFFSET] == '\r') || GL_TEMP_UART_BUFFER[GL_TEMP_UART_BUFFER_OFFSET] == '\n')
     {
       /*@@SHOUD BE TAKEN OUT FROM INTERRUPT*/
-      circular_buffer_add(GL_TEMP_UART_BUFFER,strnlen(GL_TEMP_UART_BUFFER,K_MAX_STRING));
+      circular_buffer_add(GL_TEMP_UART_BUFFER,strnlen((int8_t*)GL_TEMP_UART_BUFFER,K_MAX_STRING));
       GL_TEMP_UART_BUFFER_OFFSET = 0;
     }
     else
@@ -150,7 +161,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *par_uart)
   return;
 }
 
-extern uint8_t GL_TEXT[200];
+/*
 
 void HAL_UART_ErrorCallback(UART_HandleTypeDef *par_uart)
 {
@@ -158,22 +169,23 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *par_uart)
   if (par_uart == GL_UART)
   {
     loc_error = HAL_UART_GetError(GL_UART);
-    snprintf(GL_TEXT,sizeof(GL_TEXT),"%d",loc_error);
+    snprintf(GL_TEXT,sizeof(GL_TEXT),"ERROR:%d",loc_error);
   }
   else
   {
-    /*nothing to do*/
+    //nothing to do
   }
   return;
 }
 
-/*
+
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *par_uart)
 {
 
   return;
 }
 */
+
 #endif /* __STM32F4xx_HAL_UART_H */
 
 
